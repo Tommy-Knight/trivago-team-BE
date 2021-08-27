@@ -1,9 +1,11 @@
+import Accomodation from "../accomodations/schema.js"
+import { JWTAuthenticate } from "../../auth/tools.js";
+import { JWTMiddleware } from '../../auth/middlewares.js'
 import User from "./schema.js";
 import createError from "http-errors";
 import express from "express";
 import getUser from "./schema.js";
-import { JWTMiddleware } from '../../auth/middlewares.js'
-import { JWTAuthenticate } from "../../auth/tools.js";
+
 const usersRouter = express.Router();
 
 //><><><><> CREATES NEW USER, RETURNS ID <><><><><\\
@@ -58,7 +60,7 @@ usersRouter.get("/:id", JWTMiddleware, async (req, res, next) => {
 
 // ><><><><> UPDATE USER INFO BY ID <><><><><\\
 
-usersRouter.put("/:id", JWTMiddleware, async (req, res) => {
+usersRouter.put("/:id", JWTMiddleware,  async (req, res) => {
 	const users = await User.getUser(req.params.id);
 	if (!users) {
 		next(createError(404, "id not found"));
@@ -97,16 +99,30 @@ usersRouter.get("/me", JWTMiddleware, async (req, res, next) => {
 	}
 });
 
+// ><><><><> GET LOGGED IN USER ACCOMODATIONS <><><><><\\
+
+usersRouter.get("/me/accomodations", JWTMiddleware, async (req, res, next) => {
+	
+	try {
+		const myAccomo = await Accomodation.find({user:req.user._id})
+		res.send(myAccomo);
+		
+	} catch (error) {
+		console.log(error);
+		next(createError(500, "An error occurred while finding you"));
+	}
+});
+
 //><><><><> REFRESH TOKEN CHECK <><><><><\\
 
-// usersRouter.post("/refreshToken", async (req, res, next) => {
-// 	try {
-// 		const { actualRefreshToken } = req.body;
-// 		const { accessToken, refreshToken } = await refreshTokens(actualRefreshToken);
-// 		res.send({ accessToken, refreshToken });
-// 	} catch (error) {
-// 		next(error);
-// 	}
-// });
+usersRouter.post("/refreshToken", async (req, res, next) => {
+	try {
+		const { actualRefreshToken } = req.body;
+		const { accessToken, refreshToken } = await refreshTokens(actualRefreshToken);
+		res.send({ accessToken, refreshToken });
+	} catch (error) {
+		next(error);
+	}
+});
 
 export default usersRouter;

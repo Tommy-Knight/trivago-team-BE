@@ -1,4 +1,8 @@
+import { accomodationHost, hostOnly } from "../../auth/host.js"
+
 import Accomodation from "./schema.js";
+import { JWTAuthenticate } from "../../auth/tools.js";
+import {JWTMiddleware} from "../../auth/middlewares.js"
 import createError from "http-errors";
 import express from "express";
 
@@ -6,7 +10,7 @@ const accomodationsRouter = express.Router();
 
 //><><><><> POST NEW ACCOMODATION, RETURNS ID <><><><><\\
 
-accomodationsRouter.post("/", async (req, res, next) => {
+accomodationsRouter.post("/", JWTMiddleware, hostOnly, async (req, res, next) => {
     try {
         const newAccomodation = new Accomodation(req.body);
         const { _id } = await newAccomodation.save();
@@ -24,7 +28,7 @@ accomodationsRouter.post("/", async (req, res, next) => {
 
 //><><><><> GET ALL ACCOMODATIONS <><><><><\\
 
-accomodationsRouter.get("/", async (req, res, next) => {
+accomodationsRouter.get("/", JWTMiddleware, async (req, res, next) => {
 	try {
 		const accomodation = await Accomodation.find({}).populate("user");
 		res.send(accomodation);
@@ -36,7 +40,7 @@ accomodationsRouter.get("/", async (req, res, next) => {
 
 //><><><><> GET SPECIFIC ACCOMODATION <><><><><\\
 
-accomodationsRouter.get("/:id", async (req, res, next) => {
+accomodationsRouter.get("/:id", JWTMiddleware, async (req, res, next) => {
 	try {
 		const id = req.params.id;
 		const accomodation = await Accomodation.findById(id).populate("user");
@@ -53,7 +57,7 @@ accomodationsRouter.get("/:id", async (req, res, next) => {
 
 //><><><><> EDIT SPECIFIC ACCOMODATION <><><><><\\
 
-accomodationsRouter.put("/:id", async (req, res, next) => {
+accomodationsRouter.put("/:id", JWTMiddleware, accomodationHost, async (req, res, next) => {
 	try {
 		const accomodation = await Accomodation.findByIdAndUpdate(req.params.id, req.body, {
 			runValidators: true,
@@ -72,17 +76,17 @@ accomodationsRouter.put("/:id", async (req, res, next) => {
 
 //><><><><> DELETE SPECIFIC ACCOMODATION <><><><><\\
 
-accomodationsRouter.delete("/:id", async (req, res, next) => {
+accomodationsRouter.delete("/:id", JWTMiddleware, accomodationHost, async (req, res, next) => {
 	try {
-		const accomodation = await Accomodation.findByIdAndDelete(req.params.id);
+		const accomodation = await Accomodation.findByIdAndDelete(req.params.id).populate("user");
 		if (accomodation) {
 			res.status(204).send();
 		} else {
-			next(createError(404, `Student ${req.params.id} not found`));
+			next(createError(404, `Accomodation ${req.params.id} not found`));
 		}
 	} catch (error) {
 		console.log(error);
-		next(createError(500, "An error occurred while deleting student"));
+		next(createError(500, "An error occurred while deleting Accomodation"));
 	}
 });
 

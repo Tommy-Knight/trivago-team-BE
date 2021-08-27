@@ -1,5 +1,5 @@
-import createError from "http-errors"
 import User from "../services/users/schema.js"
+import createError from "http-errors"
 import { verifyJWT } from "./tools.js"
 
 export const JWTMiddleware = async (req, res, next) => {

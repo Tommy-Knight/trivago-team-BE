@@ -26,8 +26,8 @@ accomodationsRouter.post("/", async (req, res, next) => {
 
 accomodationsRouter.get("/", async (req, res, next) => {
 	try {
-		const blogs = await Accomodation.find({}).populate("user");
-		res.send(blogs);
+		const accomodation = await Accomodation.find({}).populate("user");
+		res.send(accomodation);
 	} catch (error) {
 		console.log(error);
 		next(createError(500, "An error occurred while getting accomodations"));
@@ -39,15 +39,15 @@ accomodationsRouter.get("/", async (req, res, next) => {
 accomodationsRouter.get("/:id", async (req, res, next) => {
 	try {
 		const id = req.params.id;
-		const blog = await Accomodation.findById(id).populate("user");
-		if (blog) {
-			res.send(blog);
+		const accomodation = await Accomodation.findById(id).populate("user");
+		if (accomodation) {
+			res.send(accomodation);
 		} else {
-			next(createError(404, `Blog ${req.params.id} not found`));
+			next(createError(404, `Accomodation ${req.params.id} not found`));
 		}
 	} catch (error) {
 		console.log(error);
-		next(createError(500, "An error occurred while getting blog"));
+		next(createError(500, "An error occurred while getting accomodation"));
 	}
 });
 
@@ -74,8 +74,8 @@ accomodationsRouter.put("/:id", async (req, res, next) => {
 
 accomodationsRouter.delete("/:id", async (req, res, next) => {
 	try {
-		const blog = await Accomodation.findByIdAndDelete(req.params.id);
-		if (blog) {
+		const accomodation = await Accomodation.findByIdAndDelete(req.params.id);
+		if (accomodation) {
 			res.status(204).send();
 		} else {
 			next(createError(404, `Student ${req.params.id} not found`));

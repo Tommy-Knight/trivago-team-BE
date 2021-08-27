@@ -47,6 +47,18 @@ usersRouter.get("/", JWTMiddleware, async (req, res, next) => {
 		next(createError(500, "An error occurred while getting users"));
 	}
 });
+
+// ><><><><> GET LOGGED IN USER INFO <><><><><\\
+
+usersRouter.get("/me", JWTMiddleware, async (req, res, next) => {
+	try {
+		res.send(req.user);
+	} catch (error) {
+		console.log(error);
+		next(createError(500, "An error occurred while finding you"));
+	}
+});
+
 // ><><><><> GET SPECIFIC USER BY ID <><><><><\\
 
 usersRouter.get("/:id", JWTMiddleware, async (req, res, next) => {
@@ -88,16 +100,6 @@ usersRouter.delete("/:id", JWTMiddleware, async (req, res, next) => {
 	}
 });
 
-// ><><><><> GET LOGGED IN USER INFO <><><><><\\
-
-usersRouter.get("/me", JWTMiddleware, async (req, res, next) => {
-	try {
-		res.send(req.user);
-	} catch (error) {
-		console.log(error);
-		next(createError(500, "An error occurred while finding you"));
-	}
-});
 
 // ><><><><> GET LOGGED IN USER ACCOMODATIONS <><><><><\\
 

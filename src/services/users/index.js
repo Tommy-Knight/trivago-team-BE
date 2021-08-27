@@ -72,16 +72,36 @@ usersRouter.get("/:id", JWTMiddleware, async (req, res, next) => {
 
 // ><><><><> UPDATE USER INFO BY ID <><><><><\\
 
-usersRouter.put("/:id", JWTMiddleware,  async (req, res) => {
-	const users = await User.getUser(req.params.id);
-	if (!users) {
-		next(createError(404, "id not found"));
+usersRouter.put("/:id", JWTMiddleware,  async (req, res, next) => {
+	try {
+		const userId = req.params.id.toString()
+		const myId = req.user._id.toString()
+
+		console.log(userId, myId);
+		console.log(userId===myId);
+		if ( userId === myId ) {
+			const updatedUser = await User.findOneAndUpdate({_id: myId}, req.body, {new: true, runValidators: true})
+			if (updatedUser) {
+				res.send(updatedUser)
+			} else {
+				next(createError(404, `User Not Found!`))
+			}
+		} else {
+			next(createError(404, `You are not authorized!`))
+		}
+	} catch (error) {
+		next(error)
 	}
-	const updatedUser = {
-		...req.body,
-		lastUpdatedOn: new Date(),
-	};
-	res.send(updatedUser);
+	// const users = await User.getUser(req.params.id);
+	// if (!users) {
+	// 	next(createError(404, "id not found"));
+	// }
+	// const updatedUser = {
+	// 	...req.body,
+	// 	lastUpdatedOn: new Date(),
+	// };
+	
+	// res.send(updatedUser);
 });
 
 // ><><><><> DELETE USER BY ID <><><><><\\

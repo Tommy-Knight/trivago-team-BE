@@ -2,7 +2,8 @@ import User from "./schema.js";
 import createError from "http-errors";
 import express from "express";
 import getUser from "./schema.js";
-import JWTMiddleware from '../../auth/middlewares.js'
+import { JWTMiddleware } from '../../auth/middlewares.js'
+import { JWTAuthenticate } from "../../auth/tools.js";
 const usersRouter = express.Router();
 
 //><><><><> CREATES NEW USER, RETURNS ID <><><><><\\
@@ -19,20 +20,20 @@ usersRouter.post("/register", async (req, res, next) => {
 
 //><><><><> CHECKS CREDENTIALS, RETURNS NEW ACCESS TOKEN <><><><><\\
 
-// usersRouter.post("/login", async (req, res, next) => {
-// 	try {
-// 		const { email, password } = req.body;
-// 		const user = await UserModel.checkCredentials(email, password);
-// 		if (user) {
-// 			const accessToken = await JWTAuthenticate(user);
-// 			res.send({ accessToken });
-// 		} else {
-// 			next(createError(401, "Credentials not valid!"));
-// 		}
-// 	} catch (error) {
-// 		next(error);
-// 	}
-// });
+usersRouter.post("/login", async (req, res, next) => {
+	try {
+		const { email, password } = req.body;
+		const user = await User.checkCredentials(email, password);
+		if (user) {
+			const accessToken = await JWTAuthenticate(user);
+			res.send({ accessToken });
+		} else {
+			next(createError(401, "Credentials not valid!"));
+		}
+	} catch (error) {
+		next(error);
+	}
+});
 
 //><><><><> GET ALL USERS <><><><><\\
 

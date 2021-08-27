@@ -4,6 +4,7 @@ import express from "express";
 import getUser from "./schema.js";
 import { JWTMiddleware } from '../../auth/middlewares.js'
 import { JWTAuthenticate } from "../../auth/tools.js";
+import { hostOnly } from "../../auth/host.js"
 const usersRouter = express.Router();
 
 //><><><><> CREATES NEW USER, RETURNS ID <><><><><\\
@@ -108,5 +109,23 @@ usersRouter.get("/me", JWTMiddleware, async (req, res, next) => {
 // 		next(error);
 // 	}
 // });
+
+//><><><><> HOSTS ONLY <><><><><\\
+
+usersRouter.get("/users/me/accomodation", JWTMiddleware, hostOnly, async (req, res, next) => {
+	res.send()
+})
+
+usersRouter.post("/accommodation", JWTMiddleware, hostOnly, async (req, res, next) => {
+	res.send()
+})
+
+usersRouter.put("/accommodation/:id", JWTMiddleware, hostOnly, async (req, res, next) => {
+	res.send()
+})
+
+usersRouter.delete("/accommodation/:id", JWTMiddleware, hostOnly, async (req, res, next) => {
+	res.send()
+})
 
 export default usersRouter;

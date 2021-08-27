@@ -2,15 +2,20 @@ import cors from "cors";
 import express from "express";
 import listEndpoints from "express-list-endpoints";
 import mongoose from "mongoose";
+import passport from 'passport'
+import facebookStrategy from './auth/oauth.js'
 
 console.time("Server startup");
 const server = express();
 const port = process.env.PORT || 3069;
 
+passport.use('facebook', facebookStrategy)
+
 // ><><><><: MIDDLEWARES :><><><>< \\
 
 server.use(express.json());
 server.use(cors());
+server.use(passport.initialize())
 
 // ><><><><: ROUTES :><><><>< \\
 

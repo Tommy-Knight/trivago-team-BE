@@ -89,18 +89,30 @@ accomodationsRouter.put("/:id", JWTMiddleware, async (req, res, next) => {
 
 //><><><><> DELETE SPECIFIC ACCOMODATION <><><><><\\
 
-accomodationsRouter.delete("/:id", JWTMiddleware, accomodationHost, async (req, res, next) => {
+accomodationsRouter.delete("/:id", JWTMiddleware, async (req, res, next) => {
 	try {
-		const accomodation = await Accomodation.findByIdAndDelete(req.params.id).populate("user");
-		if (accomodation) {
-			res.status(204).send();
+		const accomId = req.params.id
+		const deletedAccommodation = await Accomodation.findOneAndDelete({_id: accomId, user:{_id: req.user._id}})
+		if (deletedAccommodation){
+			res.status(204).send()
 		} else {
-			next(createError(404, `Accomodation ${req.params.id} not found`));
+			next(createError(404, 'Accommodation not found! OR You are NOT Authorized!'))
 		}
 	} catch (error) {
 		console.log(error);
-		next(createError(500, "An error occurred while deleting Accomodation"));
+		next(createError(500, "An error occurred while deleting accomodation"))
 	}
+	// try {
+	// 	const accomodation = await Accomodation.findByIdAndDelete(req.params.id).populate("user");
+	// 	if (accomodation) {
+	// 		res.status(204).send();
+	// 	} else {
+	// 		next(createError(404, `Accomodation ${req.params.id} not found`));
+	// 	}
+	// } catch (error) {
+	// 	console.log(error);
+	// 	next(createError(500, "An error occurred while deleting Accomodation"));
+	// }
 });
 
 export default accomodationsRouter;

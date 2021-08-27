@@ -12,10 +12,10 @@ const accomodationsRouter = express.Router();
 
 accomodationsRouter.post("/", JWTMiddleware, hostOnly, async (req, res, next) => {
     try {
-        const newAccomodation = new Accomodation(req.body);
+        const newAccomodation = new Accomodation({...req.body, user: req.user._id});
         const { _id } = await newAccomodation.save();
 
-        res.status(201).send(_id);
+        res.status(201).send({_id});
     } catch (error) {
         console.log(error);
         if (error.name === "ValidationError") {

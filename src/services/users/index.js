@@ -4,7 +4,21 @@ import express from "express";
 import getUser from "./schema.js";
 import { JWTMiddleware } from '../../auth/middlewares.js'
 import { JWTAuthenticate } from "../../auth/tools.js";
+import passport from "passport";
+
 const usersRouter = express.Router();
+
+//><><><><> CREATES NEW USER, RETURNS ID <><><><><\\
+usersRouter.get("/facebook/Login", passport.authenticate("facebook"))
+
+usersRouter.get("/facebookRedirect", passport.authenticate("facebook"), async (req, res, next) => {
+	try {
+		res.send.apply(req.user.token)
+	} catch (error) {
+		console.log(error)
+		next(error)
+	}
+});
 
 //><><><><> CREATES NEW USER, RETURNS ID <><><><><\\
 

@@ -53,7 +53,6 @@ UsersSchema.statics.checkCredentials = async function (email, plainPW) {
 
 UsersSchema.static("getUser", async function (id) {
 	const user = await this.findOne({ _id: id })
-	console.log(user);
 	return user;
 });
 

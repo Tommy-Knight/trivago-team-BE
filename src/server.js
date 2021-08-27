@@ -4,15 +4,14 @@ import {
 	notFoundErrorHandler,
 } from "./errorHandlers.js";
 
+import accomodationsRouter from "./services/accomodations/index.js"
 import cors from "cors";
 import express from "express";
+import facebookStrategy from './auth/oauth.js'
 import listEndpoints from "express-list-endpoints";
 import mongoose from "mongoose";
-
-import usersRouter from "./services/users/index.js"
 import passport from 'passport'
-import facebookStrategy from './auth/oauth.js'
-
+import usersRouter from "./services/users/index.js"
 
 console.time("Server startup");
 const server = express();
@@ -29,6 +28,7 @@ server.use(passport.initialize())
 // ><><><><: ROUTES :><><><>< \\
 
 server.use("/users", usersRouter);
+server.use("/accomodations", accomodationsRouter)
 console.table(listEndpoints(server));
 
 // ><><><><: ERROR MIDDLEWARES :><><><>< \\

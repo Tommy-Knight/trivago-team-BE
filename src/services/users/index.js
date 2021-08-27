@@ -2,7 +2,7 @@ import User from "./schema.js";
 import createError from "http-errors";
 import express from "express";
 import getUser from "./schema.js";
-
+import JWTMiddleware from '../../auth/middlewares.js'
 const usersRouter = express.Router();
 
 //><><><><> CREATES NEW USER, RETURNS ID <><><><><\\
@@ -36,7 +36,7 @@ usersRouter.post("/register", async (req, res, next) => {
 
 //><><><><> GET ALL USERS <><><><><\\
 
-usersRouter.get("/", async (req, res, next) => {
+usersRouter.get("/", JWTMiddleware, async (req, res, next) => {
 	try {
 		const users = await getUser.find({});
 		res.send(users);
@@ -46,7 +46,7 @@ usersRouter.get("/", async (req, res, next) => {
 });
 // ><><><><> GET SPECIFIC USER BY ID <><><><><\\
 
-usersRouter.get("/:id", async (req, res, next) => {
+usersRouter.get("/:id", JWTMiddleware, async (req, res, next) => {
 	try {
 		const author = await User.getUser(req.params.id);
 		author ? res.send(author) : next(createError(404, `User ${req.params.id} not found`));
@@ -57,7 +57,7 @@ usersRouter.get("/:id", async (req, res, next) => {
 
 // ><><><><> UPDATE USER INFO BY ID <><><><><\\
 
-usersRouter.put("/:id", async (req, res) => {
+usersRouter.put("/:id", JWTMiddleware, async (req, res) => {
 	const users = await User.getUser(req.params.id);
 	if (!users) {
 		next(createError(404, "id not found"));
@@ -71,7 +71,7 @@ usersRouter.put("/:id", async (req, res) => {
 
 // ><><><><> DELETE USER BY ID <><><><><\\
 
-usersRouter.delete("/:id", async (req, res, next) => {
+usersRouter.delete("/:id", JWTMiddleware, async (req, res, next) => {
 	try {
 		const users = await getUser.findByIdAndDelete(req.params.id);
 		if (users) {
@@ -87,7 +87,7 @@ usersRouter.delete("/:id", async (req, res, next) => {
 
 // ><><><><> GET LOGGED IN USER INFO <><><><><\\
 
-usersRouter.get("/me", async (req, res, next) => {
+usersRouter.get("/me", JWTMiddleware, async (req, res, next) => {
 	try {
 		res.send(req.user);
 	} catch (error) {

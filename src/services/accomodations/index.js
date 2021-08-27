@@ -57,21 +57,34 @@ accomodationsRouter.get("/:id", JWTMiddleware, async (req, res, next) => {
 
 //><><><><> EDIT SPECIFIC ACCOMODATION <><><><><\\
 
-accomodationsRouter.put("/:id", JWTMiddleware, accomodationHost, async (req, res, next) => {
+accomodationsRouter.put("/:id", JWTMiddleware, async (req, res, next) => {
 	try {
-		const accomodation = await Accomodation.findByIdAndUpdate(req.params.id, req.body, {
-			runValidators: true,
-			new: true,
-		});
-		if (accomodation) {
-			res.send(accomodation);
+		const accomId = req.params.id
+		const modifiedAccommodation = await Accomodation.findOneAndUpdate({_id: accomId, user:{_id: req.user._id}}, req.body, {new: true, runValidators: true})
+		if (modifiedAccommodation){
+			res.send(modifiedAccommodation)
 		} else {
-			next(createError(404, `Accomodation ${req.params.id} not found`));
+			next(createError(404, 'Accommodation not found! OR You are NOT Authorized!'))
 		}
 	} catch (error) {
 		console.log(error);
-		next(createError(500, "An error occurred while modifying accomodation"));
+		next(createError(500, "An error occurred while modifying accomodation"))
 	}
+
+	// try {
+	// 	const accomodation = await Accomodation.findByIdAndUpdate(req.params.id, req.body, {
+	// 		runValidators: true,
+	// 		new: true,
+	// 	});
+	// 	if (accomodation) {
+	// 		res.send(accomodation);
+	// 	} else {
+	// 		next(createError(404, `Accomodation ${req.params.id} not found`));
+	// 	}
+	// } catch (error) {
+	// 	console.log(error);
+	// 	next(createError(500, "An error occurred while modifying accomodation"));
+	// }
 });
 
 //><><><><> DELETE SPECIFIC ACCOMODATION <><><><><\\

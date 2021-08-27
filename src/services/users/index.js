@@ -77,8 +77,6 @@ usersRouter.put("/:id", JWTMiddleware,  async (req, res, next) => {
 		const userId = req.params.id.toString()
 		const myId = req.user._id.toString()
 
-		console.log(userId, myId);
-		console.log(userId===myId);
 		if ( userId === myId ) {
 			const updatedUser = await User.findOneAndUpdate({_id: myId}, req.body, {new: true, runValidators: true})
 			if (updatedUser) {

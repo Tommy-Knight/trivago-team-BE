@@ -106,16 +106,34 @@ usersRouter.put("/:id", JWTMiddleware,  async (req, res, next) => {
 
 usersRouter.delete("/:id", JWTMiddleware, async (req, res, next) => {
 	try {
-		const users = await getUser.findByIdAndDelete(req.params.id);
-		if (users) {
-			res.status(204, "Success").send();
+		const userId = req.params.id.toString()
+		const myId = req.user._id.toString()
+
+		if ( userId === myId ) {
+			const deletedUser = await User.findOneAndDelete({_id: myId})
+			if (deletedUser) {
+				res.status(204).send()
+			} else {
+				next(createError(404, `User Not Found!`))
+			}
 		} else {
-			next(createError(404, `User ${req.params.id} not found`));
+			next(createError(404, `You are not authorized!`))
 		}
 	} catch (error) {
-		console.log(error);
-		next(createError(500, "An error occurred while deleting author"));
+		next(error)
 	}
+
+	// try {
+	// 	const users = await getUser.findByIdAndDelete(req.params.id);
+	// 	if (users) {
+	// 		res.status(204, "Success").send();
+	// 	} else {
+	// 		next(createError(404, `User ${req.params.id} not found`));
+	// 	}
+	// } catch (error) {
+	// 	console.log(error);
+	// 	next(createError(500, "An error occurred while deleting author"));
+	// }
 });
 
 

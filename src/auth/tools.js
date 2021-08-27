@@ -2,10 +2,12 @@ import jwt from "jsonwebtoken"
 import { resolve } from "path"
 import { promisify } from "util"
 
-import UserModel from "../users/schema.js"
+import User from "../services/users/schema.js"
 
 export const JWTAuthenticate = async user => {
     const accessToken = await generateJWT({ _id: user._id })
+    await user.save()
+    return { accessToken }
 
 }
 const generateJWT = payload =>
